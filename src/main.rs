@@ -1,4 +1,9 @@
+use std::{fs, option};
+
 fn main() {
+
+    // NOTION DOC - https://projects.100xdevs.com/tracks/rust-bootcamp/Rust-Bootcamp-1
+
     // numbers -> Easy and Faster
     let x: i8 = -12;
     let y: u32 = 1000;
@@ -24,6 +29,7 @@ fn main() {
 
     // strings -> Harder and slower
     // This can change space in runtime
+    // That is why Strings will be saved in heap
     let greeting = String::from("Hello world");
     println!("{}", greeting);
 
@@ -65,6 +71,7 @@ fn main() {
      let first_word = get_first_word(sentence);
 
      println!("First word is: {}",first_word);
+    //  println!("sentence {}",sentence);
 
     //  MEMORY IN ACTION
 
@@ -99,6 +106,150 @@ fn main() {
     println!("");
 
     structs();
+
+    println!("");
+    println!("");
+    println!("implementing structs");
+    println!("");
+    println!("");
+
+    rectangle();
+
+
+    println!("");
+    println!("");
+    println!("enums");
+    println!("");
+    println!("");
+
+    enums();
+
+    println!("");
+    println!("");
+    println!("error_handling");
+    println!("");
+    println!("");
+
+    error_handling();
+
+    println!("");
+    println!("");
+    println!("Option enum");
+    println!("");
+    println!("");
+
+    option_enum();
+
+}
+
+fn find_first_a(s: String) -> Option<usize> {
+    for (index, character) in s.chars().enumerate() {
+        if character == 'a' {
+            return Some(index);
+        }
+    }
+    return None;
+}
+
+fn option_enum() {
+    let my_string = String::from("kk");
+
+    match find_first_a(my_string) {
+        Some(index) => println!("The letter 'a' is found in the index: {}",index),
+        None => println!("The letter 'a' not found in the string")
+    }
+}
+
+fn error_handling() {
+    let read_file = fs::read_to_string("example.txt");
+
+    // This "example.txt" can exist or not
+    // That's why read_file type is Result<String,Error>
+    match read_file {
+        Ok(file_content) => {
+            println!("These are the content of file {:?}",file_content);
+        }
+        Err(error) => {
+            println!("Failed to read file: {:?}",error);
+        }
+    }
+
+    // Incase you are ok with runtime errors (crashing the process while it runs if an error happens), then you can unwrap a Result
+    // read_file.unwrap();
+    
+}
+
+enum Direction {
+    East,
+    West,
+    North,
+    South
+}
+
+enum Shape { 
+    Circle(f64),  // Variant with associated data (radius)
+    Square(f64), // Variant with associated data (side length)
+    Rectangle(f64,f64) // Variant with associated data (width, height)
+}
+
+
+// WHY ENUMS, because it will make our code more strict
+// instead of a string , we use ENUM because now move_around
+// fn can take only 4 values as the input.
+fn enums() {
+    let my_direction = Direction::East;
+    move_around(my_direction);
+
+    println!("Enum with value");
+
+    let circle = Shape::Circle(4.2);
+    let square = Shape::Square(4.0);
+    let rectangle = Shape::Rectangle(4.0, 5_f64);
+
+    println!("Pattern Matching...");
+
+    let area_c = calculate_area(circle);
+    let area_s = calculate_area(square);
+    let area_r = calculate_area(rectangle);
+
+    println!("Area of cirlce {}, Area of Square {}, Area of Rectangle {}",area_c,area_s,area_r);
+}
+
+fn calculate_area(shape: Shape) -> f64 {
+    match shape {
+        Shape::Circle(radius) => 3.14 * radius * radius,
+        Shape::Square(side) => side * side,
+        Shape::Rectangle(width, height) => width * height
+    }
+}
+
+fn move_around(direction: Direction) {
+    // implement login here
+}
+
+struct Rect {
+   width: u32,
+   height: u32,
+}
+
+impl Rect {
+    fn area(&self) -> u32 {
+         self.width * self.height
+    }
+
+    fn perimeter(&self) -> u32 {
+        2 * (self.width + self.height)
+    }
+}
+
+fn rectangle() {
+    let rect = Rect {
+        width: 40,
+        height: 50
+    };
+
+    println!("Area of the rectangle is {}",rect.area());
+    println!("Perimete of the rectangle is {}",rect.perimeter());
 }
 
 struct User {
@@ -150,7 +301,7 @@ fn borrowing() {
     // Now you can use str4 because the mutable reference no longer exists
     println!("Str 4 -> {} is no longer borrowed", str4);
 
-    // Borrowing and hanky panky but not using it will throw error if you borrow again
+    // Borrowing and hanky panky but not using it will not throw error 
     let mut str5 = String::from("One Owner , one mut borrower and one simple borrower");
     let _m_str5 = &mut str5;
     let b_str5 = &str5;
@@ -172,7 +323,7 @@ fn ownership() {
     // EXPLICITLY CHANGING OWNERS
     let a = String::from("Hello I am Kunal");
     let mut b = a;
-    println!("a is not the owner now, b is {}", b); // this will give us errors
+    println!("a is not the owner now, b is {}", b); // this will give us errors if we try to use a again as ownership is changed
 
     // OWNER GOT CHANGED WHEN PASSED IN FUNCTION
     change_ownership(b);
